@@ -74,9 +74,6 @@ class JsonAdaptedPerson {
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
-        attributes.addAll(source.getAttributes().stream()
-                .map(JsonAdaptedAttribute::new)
-                .collect(Collectors.toList()));
         lessonList.addAll(source.getLessonList().getLessons().stream()
                 .map(JsonAdaptedLesson::new)
                 .collect(Collectors.toList()));
@@ -144,9 +141,6 @@ class JsonAdaptedPerson {
 
         final Set<Tag> modelTags = new HashSet<>(personTags);
         final Set<Attribute> modelAttributes = new HashSet<>(personAttributes);
-        for (JsonAdaptedAttribute attribute : attributes) {
-            modelAttributes.add(attribute.toModelType());
-        }
         return new Person(modelName, modelPhone, modelEmail, modelAddress, modelRemark, modelTags,
                 modelAttributes, modelLessonList);
     }

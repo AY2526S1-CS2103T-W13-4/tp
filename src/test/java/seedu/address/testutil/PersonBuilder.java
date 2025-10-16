@@ -112,14 +112,6 @@ public class PersonBuilder {
     }
 
     /**
-     * Sets the {@code Attribute} of the {@code Person} that we are building.
-     */
-    public PersonBuilder withAttributes(Set<Attribute> attributes) {
-        this.attributes.addAll(attributes);
-        return this;
-    }
-
-    /**
      * Sets the {@code Remark} of the {@code Person} that we are building.
      */
     public PersonBuilder withRemark(String remark) {
