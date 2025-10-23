@@ -12,12 +12,13 @@ import org.junit.jupiter.api.Test;
 
 import javafx.application.Platform;
 import javafx.scene.control.TextField;
+import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
- * Minimal tests for {@link CommandBox} that verify defensive behavior.
- * Uses reflection to interact with private members to avoid bringing in TestFX.
+ * Integration-style test that ensures {@link CommandBox} never propagates
+ * exceptions thrown by the command executor.
  */
 public class CommandBoxTest {
 
@@ -27,22 +28,24 @@ public class CommandBoxTest {
     }
 
     /**
-     * Ensures that when the executor throws parse/command errors, CommandBox
-     * handles them defensively (i.e., no exception escapes to the caller).
+     * Ensures that CommandBox safely handles CommandException and ParseException
+     * without throwing to the caller (defensive behavior).
      */
     @Test
     public void defensive_executeCommand_doesNotThrowForParseOrCommandErrors() {
-        // Executor that throws deterministic exceptions based on the input
-        CommandBox.CommandExecutor throwingExecutor = commandText -> {
+        // Start with a no-op executor to prevent early listener exceptions
+        CommandBox.CommandExecutor safeExecutor = commandText -> new CommandResult("OK");
+        CommandBox box = new CommandBox(safeExecutor);
+
+        // Replace the executor field reflectively with a throwing mock
+        setExecutor(box, commandText -> {
             if ("parseError".equals(commandText)) {
                 throw new ParseException("Simulated parse error");
             } else if ("commandError".equals(commandText)) {
                 throw new CommandException("Simulated command error");
             }
-            return null; // success path not used here
-        };
-
-        CommandBox box = new CommandBox(throwingExecutor);
+            return new CommandResult("OK");
+        });
 
         assertDoesNotThrow(() -> {
             setTextField(box, "parseError");
@@ -54,7 +57,7 @@ public class CommandBoxTest {
     }
 
     // ---------------------------------------------------------------------
-    // Helpers
+    // Reflection helpers
     // ---------------------------------------------------------------------
 
     private void setTextField(CommandBox box, String value) {
@@ -70,6 +73,16 @@ public class CommandBoxTest {
         });
     }
 
+    private void setExecutor(CommandBox box, CommandBox.CommandExecutor newExecutor) {
+        try {
+            Field f = CommandBox.class.getDeclaredField("commandExecutor");
+            f.setAccessible(true);
+            f.set(box, newExecutor);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to replace commandExecutor via reflection", e);
+        }
+    }
+
     private void invokeHandleCommandEntered(CommandBox box) {
         runOnFxAndWait(() -> {
             try {
@@ -82,9 +95,6 @@ public class CommandBoxTest {
         });
     }
 
-    /**
-     * Runs the runnable on the JavaFX Application Thread and waits for completion.
-     */
     private void runOnFxAndWait(Runnable r) {
         if (Platform.isFxApplicationThread()) {
             r.run();
@@ -99,7 +109,6 @@ public class CommandBoxTest {
             }
         });
         try {
-            // Wait up to 2 seconds to be safe on CI
             if (!latch.await(2, TimeUnit.SECONDS)) {
                 throw new RuntimeException("FX task did not complete in time");
             }
@@ -109,5 +118,4 @@ public class CommandBoxTest {
         }
     }
 }
-
 
