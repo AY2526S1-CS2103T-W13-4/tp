@@ -27,8 +27,8 @@ public class MainWindow extends UiPart<Stage> {
 
     private final Logger logger = LogsCenter.getLogger(getClass());
 
-    private Stage primaryStage;
-    private Logic logic;
+    private final Stage primaryStage;
+    private final Logic logic;
 
     // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
@@ -50,17 +50,15 @@ public class MainWindow extends UiPart<Stage> {
     @FXML
     private StackPane statusbarPlaceholder;
 
-    // We will remove QuickSearchBox later after CommandBox is stable
-    @FXML
-    private StackPane quickSearchBoxPlaceholder;
-
     /**
      * Creates a {@code MainWindow} with the given {@code Stage} and {@code Logic}.
      */
     public MainWindow(Stage primaryStage, Logic logic) {
         super(FXML, primaryStage);
 
-        // Set dependencies
+        assert primaryStage != null : "Primary stage should not be null";
+        assert logic != null : "Logic should not be null";
+
         this.primaryStage = primaryStage;
         this.logic = logic;
 
@@ -89,7 +87,10 @@ public class MainWindow extends UiPart<Stage> {
         /*
          * TODO: the code below can be removed once the bug reported here
          * https://bugs.openjdk.java.net/browse/JDK-8131666
-         * is fixed in later version of SDK.
+         * is fixed in later versions of the SDK.
+         *
+         * Workaround: capture function-key events even when focus is in
+         * TextInputControls (CommandBox or ResultDisplay).
          */
         getRoot().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getTarget() instanceof TextInputControl && keyCombination.match(event)) {
@@ -106,17 +107,13 @@ public class MainWindow extends UiPart<Stage> {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
 
-        // Temporary keep QuickSearchBox (will remove after verification)
-        QuickSearchBox quickSearchBox = new QuickSearchBox(logic);
-        quickSearchBoxPlaceholder.getChildren().add(quickSearchBox.getRoot());
-
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
 
         StatusBarFooter statusBarFooter = new StatusBarFooter(logic.getAddressBookFilePath());
         statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
 
-        // ✅ New constructor — pass both commandExecutor and logic
+        // ✅ CommandBox integrated with live search (QuickSearchBox removed)
         CommandBox commandBox = new CommandBox(this::executeCommand, logic);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
     }
@@ -186,10 +183,11 @@ public class MainWindow extends UiPart<Stage> {
 
             return commandResult;
         } catch (CommandException | ParseException e) {
-            logger.info("An error occurred while executing command: " + commandText);
+            logger.warning("Error executing command: " + commandText);
             resultDisplay.setFeedbackToUser(e.getMessage());
             throw e;
         }
     }
 }
+
 

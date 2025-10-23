@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -11,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -27,6 +29,8 @@ public class CommandBox extends UiPart<Region> {
     public static final String ERROR_STYLE_CLASS = "error";
     private static final String FXML = "CommandBox.fxml";
     private static final int DEBOUNCE_DELAY_MS = 300;
+
+    private static final Logger logger = LogsCenter.getLogger(CommandBox.class);
 
     private final CommandExecutor commandExecutor;
     private final Logic logic;
@@ -81,10 +85,8 @@ public class CommandBox extends UiPart<Region> {
 
         // Live search when input starts with "search" or "/search"
         commandTextField.textProperty().addListener((unused1, oldValue, newValue) -> {
-            // Debounce updates to avoid spamming the model
             debounceTimer.cancel();
             debounceTimer = new Timer(true);
-
             debounceTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -103,18 +105,13 @@ public class CommandBox extends UiPart<Region> {
         }
 
         String s = text == null ? "" : text;
-
-        boolean isSearchMode =
-                s.startsWith("search") || s.startsWith("/search");
+        boolean isSearchMode = s.startsWith("search") || s.startsWith("/search");
 
         if (!isSearchMode) {
-            // Not in search mode: show all persons
             logic.updateFilteredPersonList(person -> true);
             return;
         }
 
-        // Extract keywords after the command keyword
-        // Accepts "search", "search ", "/search", "/search "
         String withoutCmd = s.startsWith("/search")
                 ? s.substring("/search".length())
                 : s.substring("search".length());
@@ -133,29 +130,38 @@ public class CommandBox extends UiPart<Region> {
 
     /**
      * Handles the Enter button pressed event.
+     * Executes the command if it's not a search command.
      */
     @FXML
     private void handleCommandEntered() {
         String commandText = commandTextField.getText();
-        if (commandText.equals("")) {
+        if (commandText.isEmpty()) {
             return;
         }
 
-        // If user is in "search" mode, don't execute as a normal command.
-        // Live filtering is already applied; Enter should not cause "unknown command".
+        // Skip execution for live search mode
         if (commandText.startsWith("search") || commandText.startsWith("/search")) {
-            // Do nothing on Enter (keep the filter active). Users can press ESC to clear.
             return;
         }
 
+        executeCommandSafely(commandText);
+    }
+
+    /**
+     * Executes the command defensively, ensuring that errors never propagate.
+     */
+    private void executeCommandSafely(String commandText) {
         try {
             commandExecutor.execute(commandText);
             commandTextField.setText("");
         } catch (CommandException | ParseException e) {
+            logger.warning("Command execution failed defensively: " + e.getMessage());
+            setStyleToIndicateCommandFailure();
+        } catch (Exception e) {
+            logger.warning("Unexpected exception during command execution: " + e.getMessage());
             setStyleToIndicateCommandFailure();
         }
     }
-
     /**
      * Sets the command box style to use the default style.
      */
@@ -189,4 +195,5 @@ public class CommandBox extends UiPart<Region> {
         CommandResult execute(String commandText) throws CommandException, ParseException;
     }
 }
+
 
