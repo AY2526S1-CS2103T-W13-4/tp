@@ -13,10 +13,11 @@ import org.junit.jupiter.api.Test;
 import javafx.application.Platform;
 import javafx.scene.control.TextField;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
- * Minimal UI-level tests for CommandBox that verify defensive behavior without TestFX.
- * We access private members via reflection to simulate user interaction.
+ * Minimal tests for {@link CommandBox} that verify defensive behavior.
+ * Uses reflection to interact with private members to avoid bringing in TestFX.
  */
 public class CommandBoxTest {
 
@@ -26,58 +27,87 @@ public class CommandBoxTest {
     }
 
     /**
-     * The command executor throws CommandException. We verify CommandBox handles it
-     * defensively (no exception escapes) when Enter is pressed.
+     * Ensures that when the executor throws parse/command errors, CommandBox
+     * handles them defensively (i.e., no exception escapes to the caller).
      */
     @Test
-    public void defensive_executeCommand_doesNotThrowForParseOrCommandErrors() throws Exception {
-        // Create a CommandBox whose executor always throws CommandException
-        CommandBox box = new CommandBox(commandText -> {
-            throw new CommandException("Simulated failure");
-        });
-
-        // Access the private TextField and private handler via reflection
-        Field field = CommandBox.class.getDeclaredField("commandTextField");
-        field.setAccessible(true);
-        TextField tf = (TextField) field.get(box);
-
-        Method handleEnter = CommandBox.class.getDeclaredMethod("handleCommandEntered");
-        handleEnter.setAccessible(true);
-
-        // Simulate typing text and pressing Enter on the FX application thread
-        assertDoesNotThrow(() -> runOnFxAndWait(() -> {
-            tf.setText("invalid command");
-            try {
-                handleEnter.invoke(box);
-            } catch (Exception e) {
-                // Re-wrap reflection exceptions so assertDoesNotThrow can catch them as a single Throwable
-                throw new RuntimeException(e);
+    public void defensive_executeCommand_doesNotThrowForParseOrCommandErrors() {
+        // Executor that throws deterministic exceptions based on the input
+        CommandBox.CommandExecutor throwingExecutor = commandText -> {
+            if ("parseError".equals(commandText)) {
+                throw new ParseException("Simulated parse error");
+            } else if ("commandError".equals(commandText)) {
+                throw new CommandException("Simulated command error");
             }
-        }));
+            return null; // success path not used here
+        };
+
+        CommandBox box = new CommandBox(throwingExecutor);
+
+        assertDoesNotThrow(() -> {
+            setTextField(box, "parseError");
+            invokeHandleCommandEntered(box);
+
+            setTextField(box, "commandError");
+            invokeHandleCommandEntered(box);
+        });
     }
 
     // ---------------------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------------------
 
+    private void setTextField(CommandBox box, String value) {
+        runOnFxAndWait(() -> {
+            try {
+                Field f = CommandBox.class.getDeclaredField("commandTextField");
+                f.setAccessible(true);
+                TextField tf = (TextField) f.get(box);
+                tf.setText(value);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to set commandTextField via reflection", e);
+            }
+        });
+    }
+
+    private void invokeHandleCommandEntered(CommandBox box) {
+        runOnFxAndWait(() -> {
+            try {
+                Method m = CommandBox.class.getDeclaredMethod("handleCommandEntered");
+                m.setAccessible(true);
+                m.invoke(box);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to invoke handleCommandEntered via reflection", e);
+            }
+        });
+    }
+
     /**
-     * Runs the given runnable on the JavaFX Application Thread and waits until it finishes.
+     * Runs the runnable on the JavaFX Application Thread and waits for completion.
      */
-    private void runOnFxAndWait(Runnable runnable) {
+    private void runOnFxAndWait(Runnable r) {
+        if (Platform.isFxApplicationThread()) {
+            r.run();
+            return;
+        }
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
             try {
-                runnable.run();
+                r.run();
             } finally {
                 latch.countDown();
             }
         });
         try {
-            // Wait up to 1 second for FX task to complete
-            latch.await(1, TimeUnit.SECONDS);
-        } catch (InterruptedException ignored) {
+            // Wait up to 2 seconds to be safe on CI
+            if (!latch.await(2, TimeUnit.SECONDS)) {
+                throw new RuntimeException("FX task did not complete in time");
+            }
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while waiting for FX task", e);
         }
     }
 }
+
 
