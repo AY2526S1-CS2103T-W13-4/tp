@@ -1,28 +1,40 @@
 package seedu.address.ui;
 
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 
 /**
- * Initializes the JavaFX runtime for headless tests.
- * <p>
- * This utility class ensures that JavaFX components can be safely used
- * in test environments (e.g., JUnit) where the JavaFX Application Thread
- * is not automatically started.
- * </p>
+ * Ensures that JavaFX toolkit is initialized for UI tests.
+ * Works reliably in headless CI environments.
  */
-public class JavaFxInitializer {
+public final class JavaFxInitializer {
 
     private static boolean initialized = false;
 
+    private JavaFxInitializer() {
+        // utility class
+    }
+
     /**
-     * Ensures that the JavaFX platform is initialized before running tests.
+     * Initializes the JavaFX runtime if it hasn't been started yet.
      * This method is safe to call multiple times.
      */
-    public static void init() {
-        if (!initialized) {
-            // Creating a JFXPanel will start the JavaFX runtime
+    public static synchronized void init() {
+        if (initialized) {
+            return;
+        }
+
+        try {
+            // JFXPanel triggers the JavaFX platform initialization even in headless mode
             new JFXPanel();
+
+            if (!Platform.isImplicitExit()) {
+                Platform.setImplicitExit(false);
+            }
+
             initialized = true;
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to initialize JavaFX platform", e);
         }
     }
 }

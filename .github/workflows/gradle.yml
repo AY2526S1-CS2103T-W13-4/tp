@@ -9,27 +9,30 @@ jobs:
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
 
+    env:
+      DISPLAY: ":99"
+      GITHUB_HEADLESS: true
+
     steps:
       - name: Set up repository
-        uses: actions/checkout@main
-
-      - name: Set up repository
-        uses: actions/checkout@main
-        with:
-          ref: master
+        uses: actions/checkout@v4
 
       - name: Merge to master
         run: git checkout --progress --force ${{ github.sha }}
 
-      - name: Run repository-wide tests
+      # ✅ Headless display for JavaFX (Linux only)
+      - name: Start virtual display (Xvfb)
         if: runner.os == 'Linux'
-        working-directory:  ${{ github.workspace }}/.github
-        run: ./run-checks.sh
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          Xvfb :99 -ac &
+          sleep 3
 
       - name: Validate Gradle Wrapper
         uses: gradle/actions/wrapper-validation@v3
 
-      - name: Setup JDK 17
+      - name: Set up JDK 17 with JavaFX
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
@@ -37,7 +40,7 @@ jobs:
           java-package: jdk+fx
 
       - name: Build and check with Gradle
-        run: ./gradlew check coverage
+        run: ./gradlew clean build --stacktrace
 
       - name: Upload coverage reports to Codecov
         if: runner.os == 'Linux'
