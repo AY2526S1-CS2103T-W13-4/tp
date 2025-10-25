@@ -74,24 +74,6 @@ Format: `help`
 ![help message](images/helpMessage.png)
 <p align="center"><em>Figure: Help message.</em></p>
 
-### Quick Search Bar 
-
-Allows users to instantly search for contacts as they type without needing to enter any commands. 
-
-<div markdown="span" class="alert alert-primary"> :bulb: **Tip** 
-You can still use the `find` command for more specific or multi-keyword searches. 
-The Quick Search Bar is ideal for quick lookups during lessons or when managing attendance. 
-</div>
-
-Examples: 
-* Typing `alex` will display contacts such as `Alex Yeoh`
-* Typing `9876` will display contacts with phone number such as 9876123
-* Typing `john12` will display contacts with email `john123@yahoo.com`
-
-![quick search bar](images/quicksearch.png)
-<p align="center"><em>Figure: The Quick Search Bar in the top-right corner of the main window.</em></p>
-
-
 ### Adding a person: `add`
 
 Adds a person to the address book.
@@ -258,6 +240,24 @@ Examples:
 
 ![Result of filtering students](images/filterUI.png)
 <p align="center"><em>Figure: Result of filtering students by subject and age.</em></p>
+
+### Quick Search : `search`
+
+Allows users to instantly search for contacts by name, email or phone number.
+
+<div markdown="span" class="alert alert-primary"> :bulb: **Tip** 
+You can still use the `find` command for more specific or multi-keyword searches. 
+The Quick Search feature is ideal for quick lookups during lessons or when managing attendance. 
+</div>
+
+Examples:
+* Typing `search alex` will display contacts such as `Alex Yeoh`
+* Typing `search 9876` will display contacts with phone number such as 9876123
+* Typing `search john12` will display contacts with email `john123@yahoo.com`
+
+![quick search](images/quicksearch.png)
+<p align="center"><em>Figure: Result of searching a student's name.</em></p>
+
 
 ### Recording student grades : `grade`
 
