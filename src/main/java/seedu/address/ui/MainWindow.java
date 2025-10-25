@@ -24,7 +24,6 @@ import seedu.address.logic.parser.exceptions.ParseException;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
-
     private final Logger logger = LogsCenter.getLogger(getClass());
 
     private Stage primaryStage;
@@ -49,10 +48,6 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private StackPane statusbarPlaceholder;
-
-    // We will remove QuickSearchBox later after CommandBox is stable
-    @FXML
-    private StackPane quickSearchBoxPlaceholder;
 
     /**
      * Creates a {@code MainWindow} with the given {@code Stage} and {@code Logic}.
@@ -106,17 +101,13 @@ public class MainWindow extends UiPart<Stage> {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
 
-        // Temporary keep QuickSearchBox (will remove after verification)
-        QuickSearchBox quickSearchBox = new QuickSearchBox(logic);
-        quickSearchBoxPlaceholder.getChildren().add(quickSearchBox.getRoot());
-
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
 
         StatusBarFooter statusBarFooter = new StatusBarFooter(logic.getAddressBookFilePath());
         statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
 
-        // ✅ New constructor — pass both commandExecutor and logic
+        // Command box (integrated with search capability)
         CommandBox commandBox = new CommandBox(this::executeCommand, logic);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
     }
@@ -192,4 +183,5 @@ public class MainWindow extends UiPart<Stage> {
         }
     }
 }
+
 

@@ -1,6 +1,7 @@
 package seedu.address.logic;
 
 import java.nio.file.Path;
+import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
@@ -11,7 +12,7 @@ import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.person.Person;
 
 /**
- * API of the Logic component
+ * API of the Logic component.
  */
 public interface Logic {
     /**
@@ -30,29 +31,24 @@ public interface Logic {
      */
     ReadOnlyAddressBook getAddressBook();
 
-    /** Returns an unmodifiable view of the filtered list of persons */
+    /** Returns an unmodifiable view of the filtered list of persons. */
     ObservableList<Person> getFilteredPersonList();
 
     /**
-     * Updates the filtered person list with the given predicate.
-     * This method is used by the Quick Search feature for live filtering.
+     * Updates the filtered person list using the given predicate.
+     * This supports features such as dynamic filtering from the UI.
      *
-     * @param predicate The predicate defining which persons should be displayed.
+     * @param predicate Predicate defining which persons should be displayed.
      */
-    void updateFilteredPersonList(java.util.function.Predicate<seedu.address.model.person.Person> predicate);
+    void updateFilteredPersonList(Predicate<Person> predicate);
 
-    /**
-     * Returns the user prefs' address book file path.
-     */
+    /** Returns the user prefs' address book file path. */
     Path getAddressBookFilePath();
 
-    /**
-     * Returns the user prefs' GUI settings.
-     */
+    /** Returns the user prefs' GUI settings. */
     GuiSettings getGuiSettings();
 
-    /**
-     * Set the user prefs' GUI settings.
-     */
+    /** Sets the user prefs' GUI settings. */
     void setGuiSettings(GuiSettings guiSettings);
 }
+

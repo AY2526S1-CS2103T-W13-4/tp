@@ -84,6 +84,3 @@ public class PersonContainsKeywordPredicate implements Predicate<Person> {
     }
 }
 
-
-
-

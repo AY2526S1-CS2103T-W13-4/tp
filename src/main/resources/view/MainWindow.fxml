@@ -50,10 +50,8 @@
             <Insets top="10" right="10" bottom="10" left="10" />
           </padding>
 
-          <!-- New Quick Search bar -->
-          <StackPane fx:id="quickSearchBoxPlaceholder" VBox.vgrow="NEVER" />
-
-          <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS"/>
+          <!-- Person list -->
+          <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS" />
         </VBox>
 
         <StackPane fx:id="statusbarPlaceholder" VBox.vgrow="NEVER" />
@@ -61,3 +59,4 @@
     </Scene>
   </scene>
 </fx:root>
+
