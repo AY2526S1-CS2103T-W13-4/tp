@@ -76,6 +76,8 @@ public class ScheduleCommandParser implements Parser<ScheduleCommand> {
                     ScheduleCommand.MESSAGE_USAGE));
         }
 
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_START, PREFIX_END, PREFIX_DATE, PREFIX_SUB);
+
         String start = argMultimap.getValue(PREFIX_START).get().trim();
         String end = argMultimap.getValue(PREFIX_END).get().trim();
         String date = argMultimap.getValue(PREFIX_DATE).get().trim();

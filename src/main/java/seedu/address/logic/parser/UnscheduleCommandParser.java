@@ -36,6 +36,8 @@ public class UnscheduleCommandParser implements Parser<UnscheduleCommand> {
                     UnscheduleCommand.MESSAGE_USAGE));
         }
 
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_LESSON);
+
         Index lessonIndex;
         try {
             lessonIndex = ParserUtil.parseIndex(argMultimap.getValue(PREFIX_LESSON).get());
