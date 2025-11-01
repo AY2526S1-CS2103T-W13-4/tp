@@ -126,6 +126,12 @@ public class GradeCommand extends Command {
         private final String subject;
         private final String assessment;
 
+        /**
+         * Constructs a {@code GradeKey} with the given subject and assessment identifiers.
+         *
+         * @param subject the subject associated with the grade
+         * @param assessment the assessment identifier within the subject
+         */
         public GradeKey(String subject, String assessment) {
             requireNonNull(subject);
             requireNonNull(assessment);
