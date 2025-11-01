@@ -656,7 +656,7 @@ ClassRosterPro reduces tutors' admin load by consolidating contacts, tagging/fil
 
 ## **7. Architecture Overview**
 
-ClassRosterPro follows a layered architecture adapted from AddressBook-Level3, ensuring high cohesion and low coupling across modules.  
+ClassRosterPro follows a layered architecture adapted from AddressBook-Level3, ensuring high cohesion and low coupling across modules.
 Each major layer has a distinct responsibility:
 - **UI**: Handles user interactions through JavaFX components and FXML layouts (e.g., `MainWindow`, `QuickSearchBox`).
 - **Logic**: Parses user commands and executes them, returning `CommandResult` objects to the UI.

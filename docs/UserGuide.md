@@ -482,7 +482,7 @@ Examples:
 
  Display contacts with phone number such as 9876123
 
-* `search john12` 
+* `search john12`
 
  Displays contacts with email `john123@yahoo.com`
 
