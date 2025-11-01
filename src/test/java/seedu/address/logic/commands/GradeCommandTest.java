@@ -1,6 +1,8 @@
 package seedu.address.logic.commands;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
@@ -17,6 +19,7 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Grade;
 import seedu.address.model.person.Person;
+import seedu.address.logic.commands.exceptions.CommandException;
 
 public class GradeCommandTest {
 
@@ -28,7 +31,7 @@ public class GradeCommandTest {
         Set<Grade> gradesToAdd = new HashSet<>();
         gradesToAdd.add(new Grade("MATH", "WA1", "89"));
 
-        GradeCommand gradeCommand = new GradeCommand(INDEX_FIRST_PERSON, gradesToAdd);
+        GradeCommand gradeCommand = new GradeCommand(INDEX_FIRST_PERSON, gradesToAdd, new HashSet<>());
 
         String expectedMessage = String.format(GradeCommand.MESSAGE_ADD_GRADE_SUCCESS,
                 personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
@@ -48,6 +51,15 @@ public class GradeCommandTest {
     }
 
     @Test
+    public void execute_deleteNonexistentGrade_throwsCommandException() {
+        GradeCommand gradeCommand = new GradeCommand(INDEX_FIRST_PERSON, new HashSet<>(),
+                Set.of(new GradeCommand.GradeKey("MATH", "WA1")));
+
+        CommandException exception = assertThrows(CommandException.class, () -> gradeCommand.execute(model));
+        assertEquals(String.format(GradeCommand.MESSAGE_GRADE_NOT_FOUND, "MATH", "WA1"), exception.getMessage());
+    }
+
+    @Test
     public void equals() {
         Set<Grade> grades1 = new HashSet<>();
         grades1.add(new Grade("MATH", "WA1", "89"));
@@ -55,10 +67,12 @@ public class GradeCommandTest {
         Set<Grade> grades2 = new HashSet<>();
         grades2.add(new Grade("SCIENCE", "Quiz1", "95"));
 
-        GradeCommand gradeCommand1 = new GradeCommand(INDEX_FIRST_PERSON, grades1);
-        GradeCommand gradeCommand2 = new GradeCommand(INDEX_FIRST_PERSON, grades1);
-        GradeCommand gradeCommand3 = new GradeCommand(INDEX_SECOND_PERSON, grades1);
-        GradeCommand gradeCommand4 = new GradeCommand(INDEX_FIRST_PERSON, grades2);
+        GradeCommand gradeCommand1 = new GradeCommand(INDEX_FIRST_PERSON, grades1, new HashSet<>());
+        GradeCommand gradeCommand2 = new GradeCommand(INDEX_FIRST_PERSON, grades1, new HashSet<>());
+        GradeCommand gradeCommand3 = new GradeCommand(INDEX_SECOND_PERSON, grades1, new HashSet<>());
+        GradeCommand gradeCommand4 = new GradeCommand(INDEX_FIRST_PERSON, grades2, new HashSet<>());
+        GradeCommand gradeCommand5 = new GradeCommand(INDEX_FIRST_PERSON, new HashSet<>(),
+                Set.of(new GradeCommand.GradeKey("MATH", "WA1")));
 
         // same values -> returns true
         assertTrue(gradeCommand1.equals(gradeCommand2));
@@ -77,5 +91,8 @@ public class GradeCommandTest {
 
         // different grades -> returns false
         assertFalse(gradeCommand1.equals(gradeCommand4));
+
+        // different deletions -> returns false
+        assertFalse(gradeCommand1.equals(gradeCommand5));
     }
 }

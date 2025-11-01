@@ -337,7 +337,7 @@ ClassRosterPro reduces tutors' admin load by consolidating contacts, tagging/fil
 | ***      | Tutor    | Unschedule lessons                                                           | Remove cancelled or rescheduled lessons from my roster                                          |
 | ***      | Tutor    | Record student attendance for specific lessons                               | Track which students attended which classes                                                     |
 | ***      | Tutor    | Unmark attendance                                                            | Correct attendance records if marked incorrectly                                                |
-| ***      | Tutor    | Record grades for students by subject and assessment                         | Maintain a detailed grade book for each student                                                 |
+| ***      | Tutor    | Record and manage grades for students by subject and assessment              | Maintain a detailed grade book for each student                                                 |
 | ***      | Tutor    | Open/close student contact cards                                             | View detailed or summary information as needed                                                  |
 | **       | Tutor    | List all students (reset filters)                                            | Always return to the full view                                                                  |
 | **       | Tutor    | Tag with multi-values (e.g., subject=math,science)                           | Group students flexibly by multiple criteria                                                    |
@@ -431,9 +431,9 @@ ClassRosterPro reduces tutors' admin load by consolidating contacts, tagging/fil
 
 **MSS:**
 
-1. Tutor types `grade 2 sub/MATH/WA1/89 sub/SCIENCE/Quiz1/95`.
+1. Tutor types `grade 2 sub/MATH/WA1/89 sub/SCIENCE/Quiz1/95` (scores optional per grade).
 2. System validates index and grade format.
-3. System saves grades and confirms.
+3. System saves grade additions/updates or deletes existing grades when scores are omitted, then confirms.
 
 **Extensions:**
 
@@ -442,6 +442,7 @@ ClassRosterPro reduces tutors' admin load by consolidating contacts, tagging/fil
 * 2b. Subject/assessment/score empty → error message.
 * 2c. Duplicate subject-assessment in command → last occurrence wins.
 * 2d. Subject-assessment already exists for student → overwrites with new score.
+* 2e. Score omitted → grade deleted if present; otherwise error "Grade not found: SUBJECT/ASSESSMENT".
 
 ---
 
@@ -736,7 +737,7 @@ Expected: Lesson reverted to "Not attended".
 
 ### 5. Grade Recording
 
-Purpose: Record grades for multiple subjects/assessments.
+Purpose: Record, update, and delete grades for multiple subjects/assessments.
 
 Steps to test:
 1. Add grades to a student:
@@ -748,6 +749,16 @@ Expected: Grades appear under the student's card.
    - `grade 1 sub/MATH/WA1/90`
 
 Expected: The score updates to 90.
+
+3. Delete a grade:
+   - `grade 1 sub/SCIENCE/Quiz1`
+
+Expected: The Science Quiz1 grade is removed.
+
+4. Attempt to delete a non-existent grade:
+   - `grade 1 sub/SCIENCE/Quiz1`
+
+Expected: Error message `Grade not found: SCIENCE/Quiz1`.
 
 ### 6. Open and Close Student Cards
 

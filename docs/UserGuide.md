@@ -496,17 +496,19 @@ The Quick Search feature is ideal for quick lookups during lessons or when manag
 
 ### Recording student grades : `grade`
 
-Records and updates subject-assessment-score pairs for a student so tutors can keep a detailed grade book per student.
+Records, updates, or deletes subject-assessment-score pairs for a student so tutors can keep a detailed grade book per student.
 
-Format: `grade INDEX sub/SUBJECT/ASSESSMENT/SCORE [sub/SUBJECT2/ASSESSMENT2/SCORE2]…​`
+Format: `grade INDEX sub/SUBJECT/ASSESSMENT[/SCORE] [sub/SUBJECT2/ASSESSMENT2[/SCORE2]]…​`
 
-* Records grades for the student at the specified `INDEX`.
+* Records grade changes for the student at the specified `INDEX`.
 * The index refers to the index number shown in the displayed student list.
 * The index **must be a positive integer** 1, 2, 3, …​
+* Provide `SCORE` to add or update a grade. Omit `SCORE` to delete the existing grade for that subject-assessment pair.
 * If a subject-assessment combination already exists for the student, the new score will **overwrite** the existing score.
 * If the same subject-assessment appears multiple times in one command, the **last occurrence** wins.
 * At least one `sub/` prefix must be provided.
-* Subject, assessment, and score values cannot be empty.
+* Subject and assessment values cannot be empty. When provided, score values also cannot be empty.
+* Attempting to delete a subject-assessment that is not recorded will show `Grade not found: SUBJECT/ASSESSMENT`.
 
 Examples:
 * `grade 2 sub/MATH/WA1/89 sub/SCIENCE/Quiz1/95`
@@ -516,6 +518,10 @@ Examples:
 * `grade 5 sub/ENGLISH/Final/88 sub/HISTORY/Midterm/92`
 
 Records English Final score as 88 and History Midterm score as 92 for the 5th student
+
+* `grade 3 sub/SCIENCE/Quiz1`
+
+Deletes the Science Quiz1 grade for the 3rd student
 
 ![Result of recording grades](images/GradesUi.png)
 <p align="center"><em>Figure: Result of recording grades for a student.</em></p>
@@ -632,7 +638,7 @@ Action | Format, Examples
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g.,`edit 2 n/James Lee e/jameslee@example.com`
 **Filter** | `filter attr/KEY=VALUE[,VALUE2]…​ [attr/KEY2=VALUE2]…​`<br> e.g., `filter attr/subject=math,science attr/age=16`
-**Grade** | `grade INDEX sub/SUBJECT/ASSESSMENT/SCORE [sub/SUBJECT2/ASSESSMENT2/SCORE2]…​`<br> e.g., `grade 2 sub/MATH/WA1/89 sub/SCIENCE/Quiz1/95`
+**Grade** | `grade INDEX sub/SUBJECT/ASSESSMENT[/SCORE] [sub/SUBJECT2/ASSESSMENT2[/SCORE2]]…​`<br> e.g., `grade 2 sub/MATH/WA1/89 sub/SCIENCE/Quiz1/95` (add/update)<br> e.g., `grade 3 sub/SCIENCE/Quiz1` (delete)
 **Schedule Lesson** | `schedule INDEX start/START_TIME end/END_TIME date/DATE sub/SUBJECT`<br> e.g., `schedule 1 start/14:00 end/15:00 date/2025-09-20 sub/science`
 **Unschedule Lesson** | `unschedule INDEX lesson/LESSON_INDEX`<br> e.g., `unschedule 1 lesson/1`
 **Mark Attendance** | `mark INDEX lesson/LESSON_INDEX`<br> e.g., `mark 1 lesson/1`
