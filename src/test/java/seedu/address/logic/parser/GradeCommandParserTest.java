@@ -24,7 +24,7 @@ public class GradeCommandParserTest {
         expectedGrades.add(new Grade("MATH", "WA1", "89"));
 
         assertParseSuccess(parser, "1 sub/MATH/WA1/89",
-                new GradeCommand(INDEX_FIRST_PERSON, expectedGrades));
+                new GradeCommand(INDEX_FIRST_PERSON, expectedGrades, new HashSet<>()));
     }
 
     @Test
@@ -34,7 +34,28 @@ public class GradeCommandParserTest {
         expectedGrades.add(new Grade("SCIENCE", "Quiz1", "95"));
 
         assertParseSuccess(parser, "1 sub/MATH/WA1/89 sub/SCIENCE/Quiz1/95",
-                new GradeCommand(INDEX_FIRST_PERSON, expectedGrades));
+                new GradeCommand(INDEX_FIRST_PERSON, expectedGrades, new HashSet<>()));
+    }
+
+    @Test
+    public void parse_validDeletion_returnsGradeCommand() {
+        Set<Grade> expectedGrades = new HashSet<>();
+        Set<GradeCommand.GradeKey> gradesToDelete = new HashSet<>();
+        gradesToDelete.add(new GradeCommand.GradeKey("MATH", "WA1"));
+
+        assertParseSuccess(parser, "1 sub/MATH/WA1",
+                new GradeCommand(INDEX_FIRST_PERSON, expectedGrades, gradesToDelete));
+    }
+
+    @Test
+    public void parse_mixedAddAndDelete_returnsGradeCommand() {
+        Set<Grade> expectedGrades = new HashSet<>();
+        expectedGrades.add(new Grade("SCIENCE", "Quiz1", "95"));
+        Set<GradeCommand.GradeKey> gradesToDelete = new HashSet<>();
+        gradesToDelete.add(new GradeCommand.GradeKey("MATH", "WA1"));
+
+        assertParseSuccess(parser, "1 sub/MATH/WA1 sub/SCIENCE/Quiz1/95",
+                new GradeCommand(INDEX_FIRST_PERSON, expectedGrades, gradesToDelete));
     }
 
     @Test
@@ -71,19 +92,13 @@ public class GradeCommandParserTest {
     public void parse_invalidFormat_throwsParseException() {
         // Using = instead of / results in only 1 part after split
         assertParseFailure(parser, "1 sub/MATH=WA1=89",
-                "Assessment and Score are missing. Use sub/SUBJECT/ASSESSMENT/SCORE");
-    }
-
-    @Test
-    public void parse_tooFewParts_throwsParseException() {
-        assertParseFailure(parser, "1 sub/MATH/WA1",
-                "Score is missing. Use sub/SUBJECT/ASSESSMENT/SCORE");
+                "Assessment is missing. Use sub/SUBJECT/ASSESSMENT[/SCORE]");
     }
 
     @Test
     public void parse_tooManyParts_throwsParseException() {
         assertParseFailure(parser, "1 sub/MATH/WA1/89/EXTRA",
-                "Too many parts. Use sub/SUBJECT/ASSESSMENT/SCORE");
+                "Too many parts. Use sub/SUBJECT/ASSESSMENT[/SCORE]");
     }
 
     @Test
@@ -95,7 +110,7 @@ public class GradeCommandParserTest {
     @Test
     public void parse_onlySubject_throwsParseException() {
         assertParseFailure(parser, "1 sub/MATH",
-                "Assessment and Score are missing. Use sub/SUBJECT/ASSESSMENT/SCORE");
+                "Assessment is missing. Use sub/SUBJECT/ASSESSMENT[/SCORE]");
     }
 
     @Test
@@ -116,6 +131,6 @@ public class GradeCommandParserTest {
         expectedGrades.add(new Grade("MATH", "WA1", "89"));
 
         assertParseSuccess(parser, "1 sub/ MATH / WA1 / 89 ",
-                new GradeCommand(INDEX_FIRST_PERSON, expectedGrades));
+                new GradeCommand(INDEX_FIRST_PERSON, expectedGrades, new HashSet<>()));
     }
 }
