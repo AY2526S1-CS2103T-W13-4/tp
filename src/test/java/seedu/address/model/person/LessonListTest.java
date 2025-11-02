@@ -12,13 +12,20 @@ import org.junit.jupiter.api.Test;
 
 public class LessonListTest {
 
-    private final Lesson lesson1 = new Lesson("10:00", "11:00", "2023-01-01", "Math", false);
-    private final Lesson lesson2 = new Lesson("12:00", "13:00", "2023-01-01", "Science", true);
-    private final Lesson lesson3 = new Lesson("09:00", "10:00", "2023-01-02", "Physics", true);
-    private final Lesson overlappingLesson = new Lesson("10:30", "11:30", "2023-01-01", "English", false);
-    private final Lesson adjacentLesson = new Lesson("11:00", "12:00", "2023-01-01", "History", false);
-    private final Lesson overnightLesson = new Lesson("23:00", "01:00", "2023-01-01", "2023-01-02", "Camp", false);
-    private final Lesson earlyMorningLesson = new Lesson("00:30", "02:00", "2023-01-02", "2023-01-02", "Breakfast", false);
+    private final Lesson lesson1 = new Lesson("10:00", "11:00", "2023-01-01",
+            "Math", false);
+    private final Lesson lesson2 = new Lesson("12:00", "13:00", "2023-01-01",
+            "Science", true);
+    private final Lesson lesson3 = new Lesson("09:00", "10:00", "2023-01-02",
+            "Physics", true);
+    private final Lesson overlappingLesson = new Lesson("10:30", "11:30", "2023-01-01",
+            "English", false);
+    private final Lesson adjacentLesson = new Lesson("11:00", "12:00", "2023-01-01",
+            "History", false);
+    private final Lesson overnightLesson = new Lesson("23:00", "01:00", "2023-01-01",
+            "2023-01-02", "Camp", false);
+    private final Lesson earlyMorningLesson = new Lesson("00:30", "02:00", "2023-01-02",
+            "2023-01-02", "Breakfast", false);
 
     @Test
     public void checkForDuplicates_haveDuplicate_returnsTrue() {
