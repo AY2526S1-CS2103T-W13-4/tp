@@ -518,9 +518,9 @@ ClassRosterPro reduces tutors' admin load by consolidating contacts, tagging/fil
 
 **MSS:**
 
-1. Tutor types `schedule 1 start/14:00 end/15:00 date/2025-09-20 sub/science`.
-2. System validates index, time format (HH:mm), date format (YYYY-MM-DD), and time validity.
-3. System checks for overlapping lessons on the same date.
+1. Tutor types `schedule 1 start/14:00 end/15:00 date/2025-09-20 sub/science` (or optionally `date2/2025-09-21` for cross-day lessons).
+2. System validates index, time format (HH:mm), date format (YYYY-MM-DD), and ensures the end date/time is after the start date/time.
+3. System checks for overlapping lessons across the scheduled interval.
 4. System saves and confirms the lesson.
 
 **Extensions:**
@@ -529,7 +529,8 @@ ClassRosterPro reduces tutors' admin load by consolidating contacts, tagging/fil
 * 2b. Invalid time values (e.g., 24:01) → error "Invalid time. Hours must be 00-23 and minutes must be 00-59".
 * 2c. Invalid date format → error "Invalid date format. Use YYYY-MM-DD".
 * 2d. Invalid date values (e.g., 2025-11-31) → error "Invalid date. Ensure the day is valid for the given month and year".
-* 2e. End time ≤ start time → error "End time must be after start time".
+* 2e. End time/date ≤ start time/date → error "End date/time must be after start date/time".
+* 2f. End date before start date → error "End date cannot be before start date.".
 * 3a. Lesson overlaps with existing lesson → reject with "This lesson overlaps with an existing lesson".
 * 3b. Lesson duplicates an existing one → reject with "This lesson already exists".
 

@@ -17,6 +17,8 @@ public class LessonListTest {
     private final Lesson lesson3 = new Lesson("09:00", "10:00", "2023-01-02", "Physics", true);
     private final Lesson overlappingLesson = new Lesson("10:30", "11:30", "2023-01-01", "English", false);
     private final Lesson adjacentLesson = new Lesson("11:00", "12:00", "2023-01-01", "History", false);
+    private final Lesson overnightLesson = new Lesson("23:00", "01:00", "2023-01-01", "2023-01-02", "Camp", false);
+    private final Lesson earlyMorningLesson = new Lesson("00:30", "02:00", "2023-01-02", "2023-01-02", "Breakfast", false);
 
     @Test
     public void checkForDuplicates_haveDuplicate_returnsTrue() {
@@ -46,6 +48,12 @@ public class LessonListTest {
     public void hasOverlappingLesson_adjacentLessons_returnsFalse() {
         LessonList lessonList = new LessonList().add(lesson1);
         assertFalse(lessonList.hasOverlappingLesson(adjacentLesson));
+    }
+
+    @Test
+    public void hasOverlappingLesson_crossDayOverlap_returnsTrue() {
+        LessonList lessonList = new LessonList().add(overnightLesson);
+        assertTrue(lessonList.hasOverlappingLesson(earlyMorningLesson));
     }
 
     @Test

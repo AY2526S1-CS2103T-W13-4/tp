@@ -40,19 +40,28 @@ public class LessonTest {
         // different isPresent status -> returns false
         editedLesson = new Lesson("10:00", "11:00", "2023-01-01", "Math", true);
         assertFalse(lesson.equals(editedLesson));
+
+        // different end date -> returns false
+        editedLesson = new Lesson("10:00", "11:00", "2023-01-01", "2023-01-02", "Math", false);
+        assertFalse(lesson.equals(editedLesson));
     }
 
     @Test
     public void toString_formatsCorrectly() {
         // Lesson is not present
         Lesson notPresentLesson = new Lesson("14:00", "15:00", "2023-01-02", "Science", false);
-        String expectedNotPresentString = "Science class: 2023-01-02 from 14:00 to 15:00[Not Present]";
+        String expectedNotPresentString = "Science : 2023-01-02 14:00 to 2023-01-02 15:00[Not Present]";
         assertEquals(expectedNotPresentString, notPresentLesson.toString());
 
         // Lesson is present
         Lesson presentLesson = new Lesson("10:00", "11:00", "2023-01-01", "Math", true);
-        String expectedPresentString = "Math class: 2023-01-01 from 10:00 to 11:00[Present]";
+        String expectedPresentString = "Math : 2023-01-01 10:00 to 2023-01-01 11:00[Present]";
         assertEquals(expectedPresentString, presentLesson.toString());
+
+        // Cross-day lesson formatting
+        Lesson overnightLesson = new Lesson("22:00", "01:00", "2023-01-01", "2023-01-02", "Camp", false);
+        String expectedCrossDayString = "Camp : 2023-01-01 22:00 to 2023-01-02 01:00[Not Present]";
+        assertEquals(expectedCrossDayString, overnightLesson.toString());
     }
 
     @Test
@@ -71,5 +80,14 @@ public class LessonTest {
 
         assertFalse(existingLesson.overlapsWith(adjacentLesson));
         assertFalse(existingLesson.overlapsWith(differentDateLesson));
+    }
+
+    @Test
+    public void overlapsWith_crossDayOverlap_returnsTrue() {
+        Lesson overnightLesson = new Lesson("23:00", "01:00", "2023-01-01", "2023-01-02", "Camp", false);
+        Lesson earlyMorningLesson = new Lesson("00:30", "02:00", "2023-01-02", "2023-01-02", "Breakfast", false);
+
+        assertTrue(overnightLesson.overlapsWith(earlyMorningLesson));
+        assertTrue(earlyMorningLesson.overlapsWith(overnightLesson));
     }
 }

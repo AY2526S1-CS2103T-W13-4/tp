@@ -27,10 +27,13 @@ public class ScheduleCommand extends Command {
             + "Existing student will have new lesson stated in input added.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + "start/ [START TIME] end/ [END TIME} "
-            + "date/ [DATE] sub/ [SUBJECT]\n"
-            + "Example: " + COMMAND_WORD + " 1 "
+            + "date/ [START DATE] [date2/ END DATE] sub/ [SUBJECT]\n"
+            + "Example (same day): " + COMMAND_WORD + " 1 "
             + "start/ 09:30 end/ 11:30 "
-            + "date/ 2025-09-20 sub/ Maths";
+            + "date/ 2025-09-20 sub/ Maths\n"
+            + "Example (overnight): " + COMMAND_WORD + " 1 "
+            + "start/ 22:00 end/ 01:00 "
+            + "date/ 2025-09-20 date2/ 2025-09-21 sub/ Camp";
 
     public static final String MESSAGE_DUPLICATE_LESSON = "The student already has the existing lesson!";
     public static final String MESSAGE_ADD_LESSON_SUCCESS = "Scheduled Lesson to Person: %1$s";

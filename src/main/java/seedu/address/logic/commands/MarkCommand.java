@@ -74,7 +74,7 @@ public class MarkCommand extends Command {
         }
 
         Lesson markedLesson = new Lesson(lessonToMark.getStart(), lessonToMark.getEnd(),
-                lessonToMark.getDate(), lessonToMark.getSub(), true);
+                lessonToMark.getDate(), lessonToMark.getEndDate(), lessonToMark.getSub(), true);
 
         ArrayList<Lesson> newLessons = new ArrayList<>(lessonList.getLessons());
         newLessons.set(lessonIndex.getZeroBased(), markedLesson);

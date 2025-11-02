@@ -45,7 +45,7 @@ public class UnmarkCommandTest {
         expectedModel.addPerson(personToUnmark);
 
         Lesson unmarkedLesson = new Lesson(markedLesson.getStart(), markedLesson.getEnd(), markedLesson.getDate(),
-                markedLesson.getSub(), false);
+                markedLesson.getEndDate(), markedLesson.getSub(), false);
         ArrayList<Lesson> newLessons = new ArrayList<>(personToUnmark.getLessonList().getLessons());
         newLessons.set(lessonIndex.getZeroBased(), unmarkedLesson);
         Person unmarkedPerson = new PersonBuilder(personToUnmark).withLessonList(new LessonList(newLessons)).build();

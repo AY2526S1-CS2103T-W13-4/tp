@@ -67,7 +67,7 @@ public class UnmarkCommand extends Command {
         }
 
         Lesson unmarkedLesson = new Lesson(lessonToUnmark.getStart(), lessonToUnmark.getEnd(),
-                lessonToUnmark.getDate(), lessonToUnmark.getSub(), false);
+                lessonToUnmark.getDate(), lessonToUnmark.getEndDate(), lessonToUnmark.getSub(), false);
 
         ArrayList<Lesson> newLessons = new ArrayList<>(lessonList.getLessons());
         newLessons.set(lessonIndex.getZeroBased(), unmarkedLesson);

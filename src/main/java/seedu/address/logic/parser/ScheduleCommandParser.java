@@ -3,6 +3,7 @@ package seedu.address.logic.parser;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE_END;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_END;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_START;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SUB;
@@ -37,8 +38,10 @@ public class ScheduleCommandParser implements Parser<ScheduleCommand> {
             "Invalid date format. Use YYYY-MM-DD (e.g. 2025-09-20).";
     public static final String MESSAGE_INVALID_DATE_VALUE =
             "Invalid date. Ensure the day is valid for the given month and year.";
-    public static final String MESSAGE_END_TIME_BEFORE_START =
-            "End time must be after start time";
+    public static final String MESSAGE_END_BEFORE_START =
+            "End time must be after start time.";
+    public static final String MESSAGE_END_DATE_BEFORE_START_DATE =
+            "End date cannot be before start date.";
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm")
             .withResolverStyle(ResolverStyle.STRICT);
@@ -56,7 +59,7 @@ public class ScheduleCommandParser implements Parser<ScheduleCommand> {
     public ScheduleCommand parse(String args) throws ParseException {
         requireNonNull(args);
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args,
-                PREFIX_START, PREFIX_END, PREFIX_DATE, PREFIX_SUB);
+                PREFIX_START, PREFIX_END, PREFIX_DATE, PREFIX_DATE_END, PREFIX_SUB);
 
         String preamble = ParserUtil.requireSingleIndex(argMultimap.getPreamble(), ScheduleCommand.MESSAGE_USAGE);
 
@@ -69,13 +72,18 @@ public class ScheduleCommandParser implements Parser<ScheduleCommand> {
                     ScheduleCommand.MESSAGE_USAGE));
         }
 
-        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_START, PREFIX_END, PREFIX_DATE, PREFIX_SUB);
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_START, PREFIX_END, PREFIX_DATE, PREFIX_DATE_END, PREFIX_SUB);
 
         String start = argMultimap.getValue(PREFIX_START).get().trim();
         String end = argMultimap.getValue(PREFIX_END).get().trim();
         String date = argMultimap.getValue(PREFIX_DATE).get().trim();
+        String date2 = argMultimap.getValue(PREFIX_DATE_END).map(String::trim).orElse("");
         String sub = argMultimap.getValue(PREFIX_SUB).get().trim();
         if (start.isEmpty() || end.isEmpty() || date.isEmpty() || sub.isEmpty()) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                    ScheduleCommand.MESSAGE_USAGE));
+        }
+        if (argMultimap.getValue(PREFIX_DATE_END).isPresent() && date2.isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
                     ScheduleCommand.MESSAGE_USAGE));
         }
@@ -108,18 +116,35 @@ public class ScheduleCommandParser implements Parser<ScheduleCommand> {
         if (!DATE_PATTERN.matcher(date).matches()) {
             throw new ParseException(MESSAGE_INVALID_DATE_FORMAT);
         }
+        LocalDate startDate;
         try {
-            LocalDate.parse(date, DATE_FORMATTER);
+            startDate = LocalDate.parse(date, DATE_FORMATTER);
         } catch (DateTimeParseException e) {
             throw new ParseException(MESSAGE_INVALID_DATE_VALUE);
         }
 
-        // Validate that end time is after start time
-        if (!endTime.isAfter(startTime)) {
-            throw new ParseException(MESSAGE_END_TIME_BEFORE_START);
+        LocalDate endDate = startDate;
+        if (!date2.isEmpty()) {
+            if (!DATE_PATTERN.matcher(date2).matches()) {
+                throw new ParseException(MESSAGE_INVALID_DATE_FORMAT);
+            }
+            try {
+                endDate = LocalDate.parse(date2, DATE_FORMATTER);
+            } catch (DateTimeParseException e) {
+                throw new ParseException(MESSAGE_INVALID_DATE_VALUE);
+            }
+
+            if (endDate.isBefore(startDate)) {
+                throw new ParseException(MESSAGE_END_DATE_BEFORE_START_DATE);
+            }
         }
 
-        Lesson lesson = new Lesson(start, end, date, sub, false);
+        // Validate end datetime after start datetime
+        if (!endDate.atTime(endTime).isAfter(startDate.atTime(startTime))) {
+            throw new ParseException(MESSAGE_END_BEFORE_START);
+        }
+
+        Lesson lesson = new Lesson(start, end, startDate.toString(), endDate.toString(), sub, false);
         return new ScheduleCommand(index, lesson);
     }
 }

@@ -48,7 +48,7 @@ public class MarkCommandTest {
         expectedModel.setPerson(expectedPersonInModel, expectedPersonToMark);
 
         Lesson markedLesson = new Lesson(lessonToMark.getStart(), lessonToMark.getEnd(),
-                lessonToMark.getDate(), lessonToMark.getSub(), true);
+                lessonToMark.getDate(), lessonToMark.getEndDate(), lessonToMark.getSub(), true);
         ArrayList<Lesson> newLessons = new ArrayList<>(expectedPersonToMark.getLessonList().getLessons());
         newLessons.set(lessonIndex.getZeroBased(), markedLesson);
         Person markedPerson = new PersonBuilder(expectedPersonToMark)
@@ -86,7 +86,7 @@ public class MarkCommandTest {
         Lesson lessonToMark = new Lesson("10:00", "11:00", "2025-01-01", "Math", false);
         Person personToMark = new PersonBuilder(personInModel).withLesson(lessonToMark).build();
         Lesson markedLesson = new Lesson(lessonToMark.getStart(), lessonToMark.getEnd(),
-                lessonToMark.getDate(), lessonToMark.getSub(), true);
+                lessonToMark.getDate(), lessonToMark.getEndDate(), lessonToMark.getSub(), true);
         ArrayList<Lesson> newLessons = new ArrayList<>(personToMark.getLessonList().getLessons());
         newLessons.set(lessonIndex.getZeroBased(), markedLesson);
         Person markedPerson = new PersonBuilder(personToMark).withLessonList(new LessonList(newLessons)).build();
