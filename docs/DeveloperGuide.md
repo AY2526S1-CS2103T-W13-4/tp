@@ -1519,6 +1519,19 @@ ClassRosterPro reduces tutors' admin load by consolidating contacts, tagging/fil
 | **Overlap**   | When two lessons for the same student share any time period on the same date.                                        |
 | **Duplicate Lesson**| An exact match of student, date, start time, end time, and subject with an existing lesson.                          |
 
+## **6. Acknowledgements** 
+During the development of ClassRosterPro, the team made limited use of AI-assisted tools to support coding, debugging, documentation refinement, and explanation of technical concepts. In particular:
+
+ChatGPT (OpenAI) was used by Michelle for:
+* Generating initial drafts of small code snippets when exploring design alternatives (e.g., prototypes for the Search feature logic, predicates, UI wiring).
+* Assisting in debugging issues such as Checkstyle, Gradle test failures, and class/method signature mismatches.
+* Clarifying JavaFX behaviour, Java collections usage, and AB3 architectural patterns.
+* Providing guidance when writing and refining parts of the User Guide (UG) and Developer Guide (DG), including phrasing, formatting, and consistency checks.
+* Helping review and rephrase error messages, exception handling, and command behaviour descriptions.
+* Explaining test failures and suggesting possible fixes (e.g., LogicManager test issues, Search tests, filter behaviour).
+* Extent of use:
+AI assistance was advisory and supplementary. All final code, design decisions, test updates, and documentation were reviewed, verified, edited, and integrated manually by the team.
+* No AI-generated content was added without manual review. All logic, models, UI components, command implementations, and design decisions were ultimately crafted, validated, and maintained by the team.
 ---
 
 ## **Appendix: Instructions for Manual Testing**
